@@ -1,26 +1,10 @@
 import {
-  S3Client,
   PutObjectCommand,
   GetObjectCommand,
   DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-
-const MINIO_ENDPOINT = process.env.MINIO_ENDPOINT || "http://localhost:9000";
-
-const PUBLIC_ENDPOINT = process.env.PUBLIC_MINIO_ENDPOINT || MINIO_ENDPOINT;
-
-const s3Client = new S3Client({
-  endpoint: MINIO_ENDPOINT,
-  credentials: {
-    accessKeyId: process.env.MINIO_ACCESS_KEY || "minioadmin",
-    secretAccessKey: process.env.MINIO_SECRET_KEY || "minioadmin",
-  },
-  region: "us-east-1", // MinIO doesn't care about region
-  forcePathStyle: true, // Required for MinIO
-});
-
-const BUCKET_NAME = "images";
+import { s3Client, BUCKET_NAME, PUBLIC_ENDPOINT } from "./s3-client";
 
 export async function uploadImage(
   file: File

@@ -1,20 +1,5 @@
-import {
-  S3Client,
-  CreateBucketCommand,
-  HeadBucketCommand,
-} from "@aws-sdk/client-s3";
-
-const s3Client = new S3Client({
-  endpoint: "http://localhost:9000",
-  credentials: {
-    accessKeyId: "minioadmin",
-    secretAccessKey: "minioadmin",
-  },
-  region: "us-east-1",
-  forcePathStyle: true,
-});
-
-const BUCKET_NAME = "images";
+import { CreateBucketCommand, HeadBucketCommand } from "@aws-sdk/client-s3";
+import { s3Client, BUCKET_NAME } from "./s3-client";
 
 export async function initializeStorage() {
   try {
