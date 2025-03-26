@@ -5,9 +5,6 @@ import { eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { uploadImage as uploadToStorage } from "@/lib/storage";
 import { Comment } from "@/types/annotation";
-import { GetObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { s3Client, BUCKET_NAME } from "@/lib/s3-client";
 
 export async function GET(request: Request) {
   try {
@@ -32,14 +29,11 @@ export async function GET(request: Request) {
       );
     }
 
-    const command = new GetObjectCommand({
-      Bucket: BUCKET_NAME,
-      Key: shareLink.image.storageKey,
-    });
-
-    const presignedUrl = await getSignedUrl(s3Client, command, {
-      expiresIn: 604800,
-    });
+    const requestUrl = new URL(request.url);
+    const origin =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      `${requestUrl.protocol}//${requestUrl.host}`;
+    const imageUrl = `${origin}/api/image/${token}`;
 
     const imageAnnotations = await db.query.annotations.findMany({
       where: eq(annotations.imageId, shareLink.imageId),
@@ -51,7 +45,7 @@ export async function GET(request: Request) {
     return NextResponse.json({
       image: {
         ...shareLink.image,
-        url: presignedUrl,
+        url: imageUrl,
       },
       annotations: imageAnnotations,
     });
