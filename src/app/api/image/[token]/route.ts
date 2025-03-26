@@ -11,7 +11,7 @@ export async function GET(
   { params }: { params: { token: string } }
 ) {
   try {
-    const token = params.token;
+    const token = (await params).token;
 
     const shareLink = await db.query.shareLinks.findFirst({
       where: eq(shareLinks.token, token),
